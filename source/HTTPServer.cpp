@@ -140,16 +140,20 @@ void HTTPServer::addRoute(const char* route, Callback cb)
 void HTTPServer::startListening(void)
 {
 	int conn_fd, size;
-	bool found = false;
+	bool found;
 	HttpRequest *req;
 	HttpResponse *res;
 	char buffer[512];
 	unsigned int len = sizeof(_thisAddr);
 	while (true) {
+
+		found = false;
+
 		conn_fd = accept(_fd, (sockaddr*) &_thisAddr, &len);
-		if (conn_fd < 0) {
+		if (conn_fd <= 0) {
 			_logger.logMessage(ERROR, "Accepting connection failed!");
-			assert(false);
+			//assert(false);
+			continue;
 		}
 
 		size = read(conn_fd, buffer, 512);
@@ -164,6 +168,7 @@ void HTTPServer::startListening(void)
 		std::string url = req->getURL();
 
 		for (int i = 0; i < (int) _routes.size(); i++) {
+			std::cout << "checking " << _routes[i].first << " and " << url << "\n";
 			if (_routes[i].first == url) {
 				_routes[i].second(req, res);
 				found = true;
@@ -174,12 +179,11 @@ void HTTPServer::startListening(void)
 		if (!found) {
 			res->sendResponse(404);
 			_logger.logMessage(ERROR, std::string("Cannot GET " + url + "!").c_str());
-		} else {
-			res->sendResponse();
 		}
 
 		delete req;
 		delete res;
+
 	}
 	_logger.logMessage(WARNING, "Server exiting main loop...");
 }

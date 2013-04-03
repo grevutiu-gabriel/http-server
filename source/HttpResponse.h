@@ -25,6 +25,9 @@ public:
 	~HttpResponse(void);
 
 	void render(const char* filename);
+	void writeBytes(const char* bytes);
+	void end(void);
+	void end(const char* bytes);
 protected:
 	int sendResponse();
 	int sendResponse(int statusCode);

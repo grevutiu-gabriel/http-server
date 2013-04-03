@@ -17,6 +17,7 @@ HttpResponse::~HttpResponse(void)
 void HttpResponse::render(const char* filename)
 {
 	_file = std::string(filename);
+	this->sendResponse();
 }
 
 int HttpResponse::sendResponse()
@@ -52,7 +53,7 @@ int HttpResponse::sendResponse()
 
 	fclose(page);
 	close(page_fd);
-
+	close(_conn_fd);
 	return 0;
 }
 
@@ -70,5 +71,34 @@ int HttpResponse::sendResponse(int statusCode)
 	_responseString = std::string(tmp);
 
 	write(_conn_fd, _responseString.c_str(), _responseString.length());
+	close(_conn_fd);
 	return 0;
+}
+
+void HttpResponse::writeBytes(const char* bytes)
+{
+	_statusCode = 200;
+	_contentLength = std::string(bytes).length();
+
+	char tmp[512];
+	sprintf(tmp,
+			"HTTP/1.1 %d sample-text\r\nServer: test\r\nContent-Length: %d\r\n\r\n",
+			_statusCode,
+			_contentLength);
+
+	_responseString = std::string(tmp);
+
+	write(_conn_fd, _responseString.c_str(), _responseString.length());
+	write(_conn_fd, bytes, _contentLength);
+}
+
+void HttpResponse::end(void)
+{
+	shutdown(_conn_fd, SHUT_RDWR);
+}
+
+void HttpResponse::end(const char* bytes)
+{
+	writeBytes(bytes);
+	end();
 }
