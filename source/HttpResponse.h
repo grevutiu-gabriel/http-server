@@ -21,13 +21,14 @@
 class HttpResponse {
 friend class HTTPServer;
 public:
-	HttpResponse(void);
+	HttpResponse(int conn_fd);
 	~HttpResponse(void);
 
 	void render(const char* filename);
 protected:
-	int sendResponse(int conn_fd);
+	int sendResponse();
 private:
+	int _conn_fd;
 	std::string _file;
 	int _statusCode;
 	int _contentLength;

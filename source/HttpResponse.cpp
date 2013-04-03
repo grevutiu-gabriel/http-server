@@ -4,10 +4,11 @@
 
 #include "HttpResponse.h"
 
-HttpResponse::HttpResponse(void)
+HttpResponse::HttpResponse(int conn_fd)
 {
 	_contentLength = 0;
 	_statusCode = -1;
+	_conn_fd = conn_fd;
 }
 
 HttpResponse::~HttpResponse(void)
@@ -18,7 +19,7 @@ void HttpResponse::render(const char* filename)
 	_file = std::string(filename);
 }
 
-int HttpResponse::sendResponse(int conn_fd)
+int HttpResponse::sendResponse()
 {
 	int page_fd = open(_file.c_str(), O_RDONLY);
 	FILE *page = fopen(_file.c_str(), "rt");
@@ -40,13 +41,13 @@ int HttpResponse::sendResponse(int conn_fd)
 
 	_responseString = std::string(tmp);
 
-	write(conn_fd, _responseString.c_str(), _responseString.length());
+	write(_conn_fd, _responseString.c_str(), _responseString.length());
 
 	char buffer[1024];
 	int size;
 	do {
 		size = read(page_fd, buffer, 1024);
-		write(conn_fd, buffer, size);
+		write(_conn_fd, buffer, size);
 	} while (size > 0);
 
 	return 0;

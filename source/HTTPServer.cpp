@@ -159,7 +159,7 @@ void HTTPServer::startListening(void)
 		}
 
 		req = new HttpRequest(buffer);
-		res = new HttpResponse();
+		res = new HttpResponse(conn_fd);
 
 		std::string url = req->getURL();
 
@@ -174,7 +174,7 @@ void HTTPServer::startListening(void)
 		if (!found) {
 			_logger.logMessage(ERROR, std::string("Cannot GET " + url + "!").c_str());
 		} else {
-			res->sendResponse(conn_fd);
+			res->sendResponse();
 		}
 
 		delete req;
