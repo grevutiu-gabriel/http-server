@@ -8,13 +8,13 @@
 
 int index(HttpRequest *req, HttpResponse *res)
 {
-	res->render("Public/index.html");
+	res->render("public/index.html");
 	return 0;
 }
 
 int test(HttpRequest *req, HttpResponse *res)
 {
-	res->render("Public/test.html");
+	res->render("public/test.html");
 	return 0;
 }
 
@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	server.addRoute("/", index);
 	server.addRoute("/test", test);
 
-	server.run(8084);
+	server.run(8009);
 	return 0;
 }
 

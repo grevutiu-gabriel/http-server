@@ -5,23 +5,20 @@
 
 Logger::Logger()
 {
-	_stream = &(std::cout);
-}
-
-Logger::Logger(std::ostream &initialStream)
-{
-	_stream = &(initialStream);
+	_stream[0] = _stream[1] = &(std::cout);
+	_stream[2] = &(std::cerr);
 }
 
 Logger::~Logger(void)
 {
+	delete [] _stream;
 	//delete _stream;
 	// free all the memory
 }
 
-void Logger::setStream(std::ostream &stream)
+void Logger::bindStream(LogMessageType type, std::ostream &stream)
 {
-	_stream = &stream;
+	_stream[type] = &stream;
 }
 
 void Logger::logMessage(std::ostream &stream, LogMessageType type, const char *message)
@@ -31,6 +28,6 @@ void Logger::logMessage(std::ostream &stream, LogMessageType type, const char *m
 
 void Logger::logMessage(LogMessageType type, const char *message)
 {
-	*_stream << "[" << type << "] " << message << "\n";
+	*_stream[type] << "[" << type << "] " << message << "\n";
 }
 
