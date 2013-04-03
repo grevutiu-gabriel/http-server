@@ -25,10 +25,10 @@ public:
 	std::string getURL(void);
 	std::string getMethod(void);
 private:
-	std::vector<std::string>		_reqHeaders;
-	std::string						_reqString;
-	std::string						_url;
-	std::string						_method;
+	std::vector<std::string>	_reqHeaders;
+	std::string			_reqString;
+	std::string			_url;
+	std::string			_method;
 
 protected:
 	void addHeader(const char* key, const char* value);
