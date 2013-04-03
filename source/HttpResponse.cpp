@@ -56,3 +56,19 @@ int HttpResponse::sendResponse()
 	return 0;
 }
 
+int HttpResponse::sendResponse(int statusCode)
+{
+	_statusCode = statusCode;
+	_contentLength = 0;
+
+	char tmp[512];
+	sprintf(tmp,
+			"HTTP/1.1 %d sample-text\r\nServer: test\r\nContent-Length: %d\r\n\r\n",
+			_statusCode,
+			_contentLength);
+
+	_responseString = std::string(tmp);
+
+	write(_conn_fd, _responseString.c_str(), _responseString.length());
+	return 0;
+}

@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
 	server.addRoute("/", index);
 	server.addRoute("/test", test);
 
-	server.run(8009);
+	server.run(8011);
 	return 0;
 }
 

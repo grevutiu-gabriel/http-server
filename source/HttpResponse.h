@@ -27,6 +27,7 @@ public:
 	void render(const char* filename);
 protected:
 	int sendResponse();
+	int sendResponse(int statusCode);
 private:
 	int _conn_fd;
 	std::string _file;

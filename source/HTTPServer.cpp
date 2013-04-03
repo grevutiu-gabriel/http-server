@@ -172,6 +172,7 @@ void HTTPServer::startListening(void)
 		}
 
 		if (!found) {
+			res->sendResponse(404);
 			_logger.logMessage(ERROR, std::string("Cannot GET " + url + "!").c_str());
 		} else {
 			res->sendResponse();
