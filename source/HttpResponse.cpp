@@ -50,6 +50,9 @@ int HttpResponse::sendResponse()
 		write(_conn_fd, buffer, size);
 	} while (size > 0);
 
+	fclose(page);
+	close(page_fd);
+
 	return 0;
 }
 
