@@ -12,7 +12,6 @@ int index(HttpRequest *req, HttpResponse *res)
 	Object params;
 	params["custom"] = "this is a custom message!";
 
-	std::cout << "Rendering index.html...\n";
 	res->render("public/index.html", params);
 	return 0;
 }
@@ -37,7 +36,7 @@ int main(int argc, char *argv[]) {
 	server.addRoute("/test", test);
 	server.addRoute("/bytes", anotherOne);
 
-	server.run(3009);
+	server.run();
 
 //	Object obj;
 //

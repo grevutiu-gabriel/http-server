@@ -35,52 +35,43 @@ void HttpResponse::render(const char* finename, Object params)
 	_contentLength = ftell(page);
 	fseek(page, 0L, SEEK_SET);
 
-	char tmp[512];
-	sprintf(tmp,
+	char buffer[_contentLength];
+	int size = read(page_fd, buffer, 1024);
+	/* processing buffer - replacing variables */
+
+	std::string tmp = std::string(buffer);
+	unsigned int start = 0, end;
+
+	do {
+		start = tmp.find("#{", start);
+		if (start != std::string::npos && start < tmp.length()) {
+			end = tmp.find("}", start + 1);
+			if (end != std::string::npos && end < tmp.length()) {
+				std::string tmp2 = tmp.substr(start + 2, end - start - 2);
+
+				tmp = tmp.replace(start, end - start + 1, params[tmp2.c_str()]);
+
+				size -= end - start + 1;
+				size += params[tmp2.c_str()].length();
+
+				start = end + 1;
+			}
+		}
+	} while (start != std::string::npos && start > end && start < tmp.length());
+	/* end of processing - writing to socket */
+
+	_contentLength = size;
+
+	char temp[512];
+	sprintf(temp,
 			"HTTP/1.1 %d sample-text\r\nServer: test\r\nContent-Length: %d\r\n\r\n",
 			_statusCode,
 			_contentLength);
 
-	_responseString = std::string(tmp);
+	_responseString = std::string(temp);
 
 	write(_conn_fd, _responseString.c_str(), _responseString.length());
-
-	char buffer[1024];
-	int size;
-	do {
-		size = read(page_fd, buffer, 1024);
-		/* processing buffer - replacing variables */
-
-		if (size <= 0) break;
-
-		std::string tmp = std::string(buffer);
-		unsigned int start = 0, end;
-
-		do {
-			start = tmp.find("#{", start);
-			if (start != std::string::npos && start < tmp.length()) {
-				end = tmp.find("}", start + 1);
-				if (end != std::string::npos && end < tmp.length()) {
-					std::string tmp2 = tmp.substr(start + 2, end - start - 2);
-
-					tmp = tmp.replace(start, end - start + 1, params[tmp2.c_str()]);
-
-					size -= end - start + 1;
-					size += params[tmp2.c_str()].length();
-
-					start = end + 1;
-				}
-			}
-		} while (start != std::string::npos && start > end && start < tmp.length());
-
-		char buff[512];
-		memset(buff, 0, sizeof(buff));
-		strncpy(buff, tmp.c_str(), tmp.length());
-		std::cout << buff << "\n\n";
-
-		/* end of processing - writing to socket */
-		write(_conn_fd, tmp.c_str(), size + 1);
-	} while (size > 0);
+	write(_conn_fd, tmp.c_str(), size + 1);
 
 	fclose(page);
 	close(page_fd);

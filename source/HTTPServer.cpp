@@ -31,7 +31,7 @@ int HTTPServer::setPort(int port)
 	return (_port == port);
 }
 
-int HTTPServer::getPort(void)
+int HTTPServer::getPort(void) const
 {
 	return _port;
 }
@@ -51,13 +51,12 @@ int HTTPServer::run(void)
 		return -1;
 	}
 
-	err = bind(_fd, (struct sockaddr *) &_thisAddr, sizeof(struct sockaddr*));
+	err = bind(_fd, (struct sockaddr *) &_thisAddr, sizeof(_thisAddr));
 
 	if (err < 0) {
 		char msg[256];
 		sprintf(msg, "Binding on port %d failed!", _port);
 		_logger.logMessage(ERROR, msg);
-		//std::cerr << "[ERROR] Binding on port " << _port << " failed!\n";
 		return -2;
 	}
 
@@ -67,7 +66,6 @@ int HTTPServer::run(void)
 		char msg[256];
 		sprintf(msg, "Cannot listen on port %d!", _port);
 		_logger.logMessage(ERROR, msg);
-		//std::cerr << "[ERROR] Cannot listen on port " << _port << "\n";
 		return -3;
 	}
 
@@ -76,7 +74,6 @@ int HTTPServer::run(void)
 	char msg[256];
 	sprintf(msg, "Server running and listening on port %d...", _port);
 	_logger.logMessage(INFO, msg);
-	//std::cout << "[INFO] Server running and listening on port " << _port << "\n";
 
 	this->startListening();
 	return 0;
@@ -112,6 +109,7 @@ void HTTPServer::startListening(void)
 	HttpResponse *res;
 	char buffer[512];
 	unsigned int len = sizeof(_remoteAddr);
+
 	while (true) {
 
 		found = false;

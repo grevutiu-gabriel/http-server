@@ -49,12 +49,12 @@ void HttpRequest::endHeaders(void)
 	}
 }
 
-std::string HttpRequest::getURL(void)
+std::string HttpRequest::getURL(void) const
 {
 	return _url;
 }
 
-std::string HttpRequest::getMethod(void)
+std::string HttpRequest::getMethod(void) const
 {
 	return _method;
 }
