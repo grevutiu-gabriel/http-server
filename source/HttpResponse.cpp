@@ -20,6 +20,66 @@ void HttpResponse::render(const char* filename)
 	this->sendResponse();
 }
 
+void HttpResponse::render(const char* finename, Object params)
+{
+	_file = std::string(finename);
+	int page_fd = open(_file.c_str(), O_RDONLY);
+	FILE *page = fopen(_file.c_str(), "rt");
+	_statusCode = 200;
+
+	if (page == NULL) {
+		_statusCode = 404;
+	}
+
+	fseek(page, 0L, SEEK_END);
+	_contentLength = ftell(page);
+	fseek(page, 0L, SEEK_SET);
+
+	char tmp[512];
+	sprintf(tmp,
+			"HTTP/1.1 %d sample-text\r\nServer: test\r\nContent-Length: %d\r\n\r\n",
+			_statusCode,
+			_contentLength);
+
+	_responseString = std::string(tmp);
+
+	write(_conn_fd, _responseString.c_str(), _responseString.length());
+
+	char buffer[1024];
+	int size;
+	do {
+		size = read(page_fd, buffer, 1024);
+		/* processing buffer - replacing variables */
+
+		std::string tmp = std::string(buffer);
+		unsigned int start = 0, end;
+
+		do {
+			start = tmp.find("#{", start);
+			if (start != std::string::npos && start < tmp.length()) {
+				end = tmp.find("}", start + 1);
+				if (end != std::string::npos && end < tmp.length()) {
+					std::string tmp2 = tmp.substr(start + 2, end - start - 2);
+
+					tmp.replace(start, end - start + 1, params[tmp2.c_str()]);
+
+					start = end + 1;
+				}
+			}
+		} while (start != std::string::npos && start > end && start < tmp.length());
+
+		std::cout << tmp.c_str();
+
+
+		/* end of processing - writing to socket */
+		write(_conn_fd, tmp.c_str(), strlen(tmp.c_str()) + 5);
+	} while (size > 0);
+
+	fclose(page);
+	close(page_fd);
+	close(_conn_fd);
+}
+
 int HttpResponse::sendResponse()
 {
 	int page_fd = open(_file.c_str(), O_RDONLY);

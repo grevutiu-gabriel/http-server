@@ -16,7 +16,9 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string.h>
 
+#include "json/Object.h"
 
 class HttpResponse {
 friend class HTTPServer;
@@ -25,6 +27,7 @@ public:
 	~HttpResponse(void);
 
 	void render(const char* filename);
+	void render(const char* filename, Object params);
 	void writeBytes(const char* bytes);
 	void end(void);
 	void end(const char* bytes);
