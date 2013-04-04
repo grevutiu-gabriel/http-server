@@ -22,8 +22,8 @@ public:
 	HttpRequest(char* requestString);
 	~HttpRequest(void);
 
-	std::string getURL(void);
-	std::string getMethod(void);
+	std::string getURL(void) const;
+	std::string getMethod(void) const;
 private:
 	std::vector<std::string>	_reqHeaders;
 	std::string			_reqString;

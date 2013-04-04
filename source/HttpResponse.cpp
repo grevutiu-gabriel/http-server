@@ -78,10 +78,6 @@ void HttpResponse::render(const char* finename, Object params)
 		strncpy(buff, tmp.c_str(), tmp.length());
 		std::cout << buff << "\n\n";
 
-		FILE * f = fopen("alex.txt", "wb");
-		fwrite(buff, 1, size, f);
-		fclose(f);
-
 		/* end of processing - writing to socket */
 		write(_conn_fd, tmp.c_str(), size + 1);
 	} while (size > 0);

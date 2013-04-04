@@ -32,7 +32,7 @@ public:
 	~HTTPServer(void);
 
 	int setPort(int port);
-	int getPort(void);
+	int getPort(void) const;
 
 	int run(void);
 	int run(int port);
