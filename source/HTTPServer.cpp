@@ -84,41 +84,8 @@ int HTTPServer::run(void)
 
 int HTTPServer::run(int port)
 {
-	int err;
-
 	this->_port = (port > 1024) ? port : _port;
-
-	memset(&_thisAddr, 0, sizeof(sockaddr_in));
-
-	_thisAddr.sin_family = AF_INET;
-	_thisAddr.sin_port = htons(_port);
-	_thisAddr.sin_addr.s_addr = INADDR_ANY;
-
-	_fd = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-	if (_fd < 0) {
-		std::cerr << "[ERROR] Socket could not be created!\n";
-		return -1;
-	}
-
-	err = bind(_fd, (struct sockaddr *) &_thisAddr, sizeof(struct sockaddr));
-
-	if (err < 0) {
-		std::cerr << "[ERROR] Binding on port " << _port << " failed!\n";
-		return -2;
-	}
-
-	err = listen(_fd, 10);
-
-	if (err < 0) {
-		std::cerr << "[ERROR] Cannot listen on port " << _port << "\n";
-		return -3;
-	}
-
-	std::cout << "[INFO] Server running and listening on port " << _port << "...\n";
-
-	this->startListening();
-	return 0;
+	return this->run();
 }
 
 void HTTPServer::stop()
