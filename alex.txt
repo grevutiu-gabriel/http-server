@@ -1,0 +1,10 @@
+<html>
+<head>
+	<title>Index</title>
+</head>
+<body>
+	<h1>It works!</h1>
+	<h2>this is a custom message!</h2>
+	<p>This page was served through a C++ HTTP server!</p>
+</body>
+</html>

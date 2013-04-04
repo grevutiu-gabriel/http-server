@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 	server.addRoute("/test", test);
 	server.addRoute("/bytes", anotherOne);
 
-	server.run(3040);
+	server.run(3009);
 
 //	Object obj;
 //

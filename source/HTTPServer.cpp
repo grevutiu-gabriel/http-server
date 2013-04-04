@@ -144,12 +144,12 @@ void HTTPServer::startListening(void)
 	HttpRequest *req;
 	HttpResponse *res;
 	char buffer[512];
-	unsigned int len = sizeof(_thisAddr);
+	unsigned int len = sizeof(_remoteAddr);
 	while (true) {
 
 		found = false;
 
-		conn_fd = accept(_fd, (sockaddr*) &_thisAddr, &len);
+		conn_fd = accept(_fd, (sockaddr*) &_remoteAddr, &len);
 		if (conn_fd <= 0) {
 			_logger.logMessage(ERROR, "Accepting connection failed!");
 			//assert(false);

@@ -51,6 +51,8 @@ void HttpResponse::render(const char* finename, Object params)
 		size = read(page_fd, buffer, 1024);
 		/* processing buffer - replacing variables */
 
+		if (size <= 0) break;
+
 		std::string tmp = std::string(buffer);
 		unsigned int start = 0, end;
 
@@ -61,18 +63,27 @@ void HttpResponse::render(const char* finename, Object params)
 				if (end != std::string::npos && end < tmp.length()) {
 					std::string tmp2 = tmp.substr(start + 2, end - start - 2);
 
-					tmp.replace(start, end - start + 1, params[tmp2.c_str()]);
+					tmp = tmp.replace(start, end - start + 1, params[tmp2.c_str()]);
+
+					size -= end - start + 1;
+					size += params[tmp2.c_str()].length();
 
 					start = end + 1;
 				}
 			}
 		} while (start != std::string::npos && start > end && start < tmp.length());
 
-		std::cout << tmp.c_str();
+		char buff[512];
+		memset(buff, 0, sizeof(buff));
+		strncpy(buff, tmp.c_str(), tmp.length());
+		std::cout << buff << "\n\n";
 
+		FILE * f = fopen("alex.txt", "wb");
+		fwrite(buff, 1, size, f);
+		fclose(f);
 
 		/* end of processing - writing to socket */
-		write(_conn_fd, tmp.c_str(), strlen(tmp.c_str()) + 5);
+		write(_conn_fd, tmp.c_str(), size + 1);
 	} while (size > 0);
 
 	fclose(page);
